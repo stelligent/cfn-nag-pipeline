@@ -1,36 +1,43 @@
-## Pre-requisites
+<img src="https://github.com/stelligent/cfn_nag/raw/master/logo.png?raw=true" width="150">
+<br/>
 
-0. Install Maven (Java)
-   * For more information see: https://maven.apache.org/install.html
+## Overview
+A lambda function to run [cfn_nag](https://github.com/stelligent/cfn_nag) as an action in CodePipeline.
 
-1. Configure credentials for an AWS account in the environment
-   * The credentials will need permission to create an S3 bucket, lambda functions, and an IAM role for the functions (at least)
-    
-2. An S3 bucket to stage the packsged lambda and template to
-   * `make bucket`
- 
-## Build the cfn-nag lambda
 
-`make`
+## Installation
+To install, navigate to the [AWS Serverless Repo](https://serverlessrepo.aws.amazon.com/applications/arn:aws:serverlessrepo:us-east-1:923120264911:applications~cfn-nag-pipeline) and click deploy.
 
-## Package the lambda and stage to S3
+NOTE: due to a bug with SAM policy templates ([#389](https://github.com/awslabs/serverless-application-model/issues/389)) you will need to manually update the IAM role that the Lambda function assumes. The role should be named something like `aws-serverless-repository-cfn-n-CfnNagFunctionRole-XXXXXXXX`.  Update the inline policy named `CfnNagFunctionRolePolicy0` to set the `Resource` to `*`:
 
-`make stage`
-
-## Deploy new revision to Serverless Repo
-
-`make sar`
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "codepipeline:PutJobFailureResult",
+                "codepipeline:PutJobSuccessResult"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
 
 ## Reference the Lambda from Code Pipeline
 
-0. Add a source step for a repository with CloudFormation templates
-1. Add a downstream build step with provider `AWS Lambda`
-2. Select the function name `cfn-nag-pipeline`
-3. Select the glob for CloudFormation templates in the user parmaeters section for the step: e.g. `spec/test_templates/json/ec2_volume/*.json`
-4. Select the name of the Input Artifact from the repository
+* Add a source step for a repository with CloudFormation templates
+* Add a downstream build step with provider `AWS Lambda`
+* Select the function name `cfn-nag-pipeline`
+* Select the glob for CloudFormation templates in the user parmaeters section for the step: e.g. `spec/test_templates/json/ec2_volume/*.json`
+* Select the name of the Input Artifact from the repository
 
+## Development
 
-TODO: 
-1. Output Artifacts vs. dummping to CW logs
-2. Release process/CI/pipeline for the lambda
-3. Keep the underlying gem and the lambda in tandem?
+* Ensure **maven** is installed.  For more information see: https://maven.apache.org/install.html
+* Ensure **awscli** is installed. The credentials will need permission to create an S3 bucket, lambda functions, and an IAM role for the functions (at least)
+* To run tests and build the lambda function, run: `make`
+* To deploy the function, run: `make deploy`
+* To deploy a new version to Serverless Application Repository, update the `VERSION` in `Makefile` and run: `make sar`
