@@ -38,10 +38,15 @@ stage: build bucket
 sar: stage
 	@aws serverlessrepo get-application --application-id arn:aws:serverlessrepo:$(AWS_DEFAULT_REGION):$(AWS_ACCOUNT):applications/cfn-nag-pipeline > /dev/null 2>&1 || \
 	 aws serverlessrepo create-application --author Stelligent --description "A lambda function to run cfn_nag as an action in CodePipeline" \
-	 --labels codepipeline cloudformation cfn_nag --readme-body https://raw.githubusercontent.com/stelligent/cfn_nag/master/README.md --name "cfn-nag-pipeline" --spdx-license-id MIT
+	 --labels codepipeline cloudformation cfn_nag \
+	 --readme-body https://raw.githubusercontent.com/stelligent/cfn-nag-pipeline/master/README.md \
+	 --spdx-license-id MIT \
+	 --license-body https://raw.githubusercontent.com/stelligent/cfn-nag-pipeline/master/LICENSE.md \
+	 --source-code-url github.com/stelligent/cfn-nag-pipeline \
+	 --name "cfn-nag-pipeline" 
 	
 	@echo "[INFO] creating new application version $(VERSION)"
-	@aws serverlessrepo create-application-version --application-id arn:aws:serverlessrepo:$(AWS_DEFAULT_REGION):$(AWS_ACCOUNT):applications/cfn-nag-pipeline --source-code-url github.com/stelligent/cfn_nag --template-body file://target/lambda.yml --region $(AWS_DEFAULT_REGION) --semantic-version $(VERSION)
+	@aws serverlessrepo create-application-version --application-id arn:aws:serverlessrepo:$(AWS_DEFAULT_REGION):$(AWS_ACCOUNT):applications/cfn-nag-pipeline --source-code-url github.com/stelligent/cfn-nag-pipeline --template-body file://target/lambda.yml --region $(AWS_DEFAULT_REGION) --semantic-version $(VERSION)
 	
 deploy: stage
 	@aws cloudformation deploy --template-file target/lambda.yml --stack-name aws-serverless-repository-cfn-nag-pipeline \
