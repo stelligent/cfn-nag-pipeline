@@ -31,7 +31,7 @@ NOTE: due to a bug with SAM policy templates ([#389](https://github.com/awslabs/
 * Add a source step for a repository with CloudFormation templates
 * Add a downstream build step with provider `AWS Lambda`
 * Select the function name `cfn-nag-pipeline`
-* Select the glob for CloudFormation templates in the user parmaeters section for the step: e.g. `spec/test_templates/json/ec2_volume/*.json`
+* Select the glob for CloudFormation templates in the user parameters section for the step: e.g. `spec/test_templates/json/ec2_volume/*.json`
 * Select the name of the Input Artifact from the repository
 
 ## Development
