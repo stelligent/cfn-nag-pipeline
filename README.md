@@ -6,7 +6,7 @@ A lambda function to run [cfn_nag](https://github.com/stelligent/cfn_nag) as an 
 
 
 ## Installation
-To install, navigate to the [AWS Serverless Repo](https://serverlessrepo.aws.amazon.com/applications/arn:aws:serverlessrepo:us-east-1:***REMOVED***:applications~cfn-nag-pipeline) and click deploy.
+To install, navigate to the [AWS Serverless Repo](https://serverlessrepo.aws.amazon.com/applications/arn:aws:serverlessrepo:us-east-1:xxxxx:applications~cfn-nag-pipeline) and click deploy.
 
 NOTE: due to a bug with SAM policy templates ([#389](https://github.com/awslabs/serverless-application-model/issues/389)) you will need to manually update the IAM role that the Lambda function assumes. The role should be named something like `aws-serverless-repository-cfn-n-CfnNagFunctionRole-XXXXXXXX`.  Update the inline policy named `CfnNagFunctionRolePolicy0` to set the `Resource` to `*`:
 
