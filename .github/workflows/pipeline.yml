@@ -1,4 +1,4 @@
-name: cfn_nag
+name: cfn_nag_sar_for_code_pipeline
 
 on:
   - push:
