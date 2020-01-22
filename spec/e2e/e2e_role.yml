@@ -74,6 +74,7 @@ Resources:
             Effect: Allow
             Action:
               - lambda:GetFunction
+              - lambda:UpdateFunctionCode
             Resource:
               - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ServerlessApplicationName}
           -

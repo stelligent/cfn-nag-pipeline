@@ -24,6 +24,8 @@ task default: [:test]
 task test: [:spec] do
   puts '[INFO] validating cfn template'
   sh "aws cloudformation validate-template --template-body file://lambda.yml --region #{AWS_DEFAULT_REGION}"
+  sh "aws cloudformation validate-template --template-body file://spec/e2e/e2e_role.yml --region #{AWS_DEFAULT_REGION}"
+  sh "aws cloudformation validate-template --template-body file://spec/e2e/code_pipeline_using_nag.yml --region #{AWS_DEFAULT_REGION}"
 end
 
 task :bucket, :bucket_name do |task, args|
@@ -108,6 +110,7 @@ END
   puts "[INFO] creating new application version #{cfn_nag_version}"
   #### IF VERSION ALREADY THERE!!!!!????? UPDATE OR REPLACE????
   #### lazy to ignore failure but need to list-application-versions
+  #--application-id <value>
   create_application_version_command = <<END
 aws serverlessrepo create-application-version --application-id #{application_id} \
                                               --source-code-url #{source_code_url} \

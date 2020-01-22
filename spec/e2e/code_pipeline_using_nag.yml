@@ -118,6 +118,6 @@ Resources:
         Type: S3
         Location: !Ref CodePipelineArtifactStoreBucket
 
-Output:
+Outputs:
   CfnNagSarTestPipeline:
     Value: !Ref CfnNagSarTestPipeline
