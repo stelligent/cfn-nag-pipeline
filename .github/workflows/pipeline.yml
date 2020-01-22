@@ -69,7 +69,7 @@ jobs:
         id: kickoff
         run: |
           EXECUTION_ID=$(aws codepipeline start-pipeline-execution --name CfnNagSarTestPipeline  --output text --query pipelineExecutionId)
-          ::set-output name=execution_id::$EXECUTION_ID
+          echo "::set-output name=execution_id::$EXECUTION_ID"
       - name: Inspect status
         run: rspec spec/e2e/pipeline_invoked_nag_spec.rb
         env:
