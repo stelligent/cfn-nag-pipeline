@@ -72,7 +72,7 @@ jobs:
         run: rspec spec/e2e/pipeline_invoked_nag_spec.rb
         env:
           pipeline_name: CfnNagSarTestPipeline
-          execution_id: steps.kickoff.outputs.stdout
+          execution_id: ${{ steps.kickoff.outputs.stdout }}
 #      - name: Cleanup the pipeline
 #        run: aws cloudformation delete-stack --stack-name nag-sar-e2e
 #      - name: Uneploy the nag Lambda from SAR
