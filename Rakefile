@@ -1,7 +1,8 @@
 require 'yaml'
 require 'rspec/core/rake_task'
 
-AWS_DEFAULT_REGION = `aws configure get region`.chomp
+#AWS_DEFAULT_REGION = `aws configure get region`.chomp
+AWS_DEFAULT_REGION = 'us-east-1'
 AWS_ACCOUNT_ID = `aws sts get-caller-identity --output text --query 'Account'`.chomp
 LAMBDA_DEPLOYMENT_CFN_STACK_NAME = 'aws-serverless-repository-cfn-nag-pipeline'
 

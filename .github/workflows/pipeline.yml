@@ -36,6 +36,7 @@ jobs:
   acceptance:
     name: Acceptance
     runs-on: ubuntu-latest
+    needs: [commit]
 
     steps:
       - uses: actions/checkout@master
