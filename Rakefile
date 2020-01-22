@@ -15,7 +15,7 @@ build_properties = {
 }
 
 RSpec::Core::RakeTask.new(:spec) do |task|
-  task.exclude_pattern = 'spec/e2e'
+  task.exclude_pattern = 'spec/e2e/*.rb'
 end
 
 task default: [:test]
