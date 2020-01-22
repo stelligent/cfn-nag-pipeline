@@ -67,7 +67,7 @@ jobs:
         run: aws s3 cp spec/test_templates/json_templates.zip s3://cfnnagsarpipelinesourcebucket/
       - name: Kick off the pipeline
         id: kickoff
-        run: aws codepipeline start-pipeline-execution --name CfnNagSarTestPipeline
+        run: aws codepipeline start-pipeline-execution --name CfnNagSarTestPipeline  --output text --query pipelineExecutionId
       - name: Inspect status
         run: rspec spec/e2e/pipeline_invoked_nag_spec.rb
         env:
