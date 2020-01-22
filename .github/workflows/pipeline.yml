@@ -65,15 +65,14 @@ jobs:
         run: aws cloudformation deploy --stack-name nag-sar-e2e --template-file spec/e2e/code_pipeline_using_nag.yml --capabilities CAPABILITY_IAM  --no-fail-on-empty-changeset
       - name: Put source into right place in s3
         run: aws s3 cp spec/test_templates/json_templates.zip s3://cfnnagsarpipelinesourcebucket/
-      - name: Kick it off
+      - name: Kick off the pipeline
+        id: kickoff
         run: aws codepipeline start-pipeline-execution --name CfnNagSarTestPipeline
-#        outputs:
-#          execution_id:
-#      - name: Inspect status
-#        run: rspec spec/e2e/pipeline_invoked_nag_spec.rb
-#        env:
-#          pipeline_name: CfnNagSarTestPipeline
-#
+      - name: Inspect status
+        run: rspec spec/e2e/pipeline_invoked_nag_spec.rb
+        env:
+          pipeline_name: CfnNagSarTestPipeline
+          execution_id: steps.kickoff.outputs.stdout
 #      - name: Cleanup the pipeline
 #        run: aws cloudformation delete-stack --stack-name nag-sar-e2e
 #      - name: Uneploy the nag Lambda from SAR

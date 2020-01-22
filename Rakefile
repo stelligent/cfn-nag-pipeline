@@ -89,21 +89,6 @@ aws serverlessrepo get-application --application-id  #{application_id} > /dev/nu
 END
   sh create_application_if_necessary_command
 
-  if public_visibility
-    app_visibility_command = <<END
-aws serverlessrepo put-application-policy --region #{AWS_DEFAULT_REGION} \
-                                          --application-id #{application_id} \
-                                          --statements Principals=*,Actions=Deploy
-END
-  else
-    app_visibility_command = <<END
-aws serverlessrepo put-application-policy --region #{AWS_DEFAULT_REGION} \
-                                          --application-id #{application_id} \
-                                          --statements '[]'
-END
-  end
-  sh app_visibility_command
-
   gem_listing_of_cfn_nag = `gem list -q cfn-nag`.chomp
   cfn_nag_version = gem_listing_of_cfn_nag.split('(')[1].split(')')[0]
 
@@ -119,6 +104,21 @@ aws serverlessrepo create-application-version --application-id #{application_id}
                                               --semantic-version #{cfn_nag_version} || true
 END
   sh create_application_version_command
+
+  if public_visibility
+    app_visibility_command = <<END
+aws serverlessrepo put-application-policy --region #{AWS_DEFAULT_REGION} \
+                                          --application-id #{application_id} \
+                                          --statements Principals=*,Actions=Deploy
+END
+  else
+    app_visibility_command = <<END
+aws serverlessrepo put-application-policy --region #{AWS_DEFAULT_REGION} \
+                                          --application-id #{application_id} \
+                                          --statements '[]'
+END
+  end
+  sh app_visibility_command
 end
 
 task :deploy do
