@@ -64,7 +64,7 @@ jobs:
       - name: Deploy a CodePipeline to use cfn-nag lambda
         run: aws cloudformation deploy --stack-name nag-sar-e2e --template-file spec/e2e/code_pipeline_using_nag.yml --capabilities CAPABILITY_IAM
       - name: Put source into right place in s3
-        run: aws s3 cp spec/test_templates/json_templates.zip s3://CfnNagSarPipelineSourceBucket/
+        run: aws s3 cp spec/test_templates/json_templates.zip s3://cfnnagsarpipelinesourcebucket/
       - name: Kick it off
         run: aws codepipeline start-pipeline-execution --name CfnNagSarTestPipeline
 #      - name: Inspect status
