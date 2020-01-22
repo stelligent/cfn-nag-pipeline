@@ -1,10 +1,10 @@
 name: cfn_nag_sar_for_code_pipeline
 
 on:
-  - push:
-      branches:
-        - master
-  - repository_dispatch
+  push:
+    branches:
+      - master
+  repository_dispatch: {}
 
 jobs:
   commit:
