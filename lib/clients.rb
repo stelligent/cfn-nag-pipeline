@@ -1,4 +1,5 @@
-require 'aws-sdk'
+require 'aws-sdk-s3'
+require 'aws-sdk-codepipeline'
 
 # CodePipeline Client container
 module Clients

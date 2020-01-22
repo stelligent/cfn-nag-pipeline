@@ -1,5 +1,5 @@
-Gemfile.lock
 coverage
-dependency-reduced-pom.xml
-target/
 .bundle/
+target
+vendor
+.idea

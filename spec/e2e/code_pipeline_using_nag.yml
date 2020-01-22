@@ -1,0 +1,122 @@
+Parameters:
+  SourceObjectKey:
+    Description: 'S3 source artifact'
+    Type: String
+    Default: CfnTemplates.zip
+  CfnNagLambdaFunctionName:
+    Type: String
+    Default: cfn-nag-pipeline
+  CfnTemplatePattern:
+    Type: String
+    Default: '*.json'
+
+Resources:
+  CfnNagSarPipelineSourceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+    DeletionPolicy: Retain
+
+  CodePipelineArtifactStoreBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        -
+          PolicyName: AWS-CodePipeline-Service
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - lambda:ListFunctions
+                Resource: '*'
+              -
+                Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${CfnNagLambdaFunctionName}
+              -
+                Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: '*'
+              -
+                Effect: Allow
+                Action:
+                  - cloudformation:*
+                Resource: '*'
+              -
+                Effect: Allow
+                Action:
+                  - s3:*
+                Resource:
+                  - !Sub "${CodePipelineArtifactStoreBucket.Arn}/*"
+                  - !Sub "${CodePipelineArtifactStoreBucket.Arn}"
+                  - !Sub "${CfnNagSarPipelineSourceBucket.Arn}/*"
+                  - !Sub "${CfnNagSarPipelineSourceBucket.Arn}"
+
+  CfnNagSarTestPipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: CfnNagSarTestPipeline
+      RoleArn:
+        !GetAtt CodePipelineServiceRole.Arn
+      Stages:
+        -
+          Name: Source
+          Actions:
+            -
+              Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: 1
+                Provider: S3
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                S3Bucket: !Ref CfnNagSarPipelineSourceBucket
+                S3ObjectKey: !Ref SourceObjectKey
+                PollForSourceChanges: false
+              RunOrder: 1
+        -
+          Name: Scan
+          Actions:
+            -
+              Name: CfnNagAction
+              InputArtifacts:
+                - Name: SourceOutput
+              ActionTypeId:
+                Category: Invoke
+                Owner: AWS
+                Version: 1
+                Provider: Lambda
+              Configuration:
+                FunctionName: !Ref CfnNagLambdaFunctionName
+                UserParameters: !Ref CfnTemplatePattern
+              RunOrder: 1
+
+      ArtifactStore:
+        Type: S3
+        Location: !Ref CodePipelineArtifactStoreBucket
+
+Output:
+  CfnNagSarTestPipeline:
+    Value: !Ref CfnNagSarTestPipeline

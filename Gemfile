@@ -6,5 +6,6 @@ gem 'rubyzip'
 group :test do
   gem 'rspec'
   gem 'simplecov'
-  gem 'aws-sdk', '~> 3'
+  gem 'aws-sdk-codepipeline'
+  gem 'aws-sdk-s3'
 end

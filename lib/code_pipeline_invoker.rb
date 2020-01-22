@@ -4,17 +4,22 @@ require_relative 'clients'
 require_relative 'plain_text_results'
 require_relative 'plain_text_summary'
 
-# Container for invoking CodePipeline
+
 class CodePipelineInvoker
   include Clients
 
+  def initialize(code_pipeline_job, aws_request_id)
+    @aws_request_id = aws_request_id
+    @code_pipeline_job = code_pipeline_job
+  end
+
   def audit
-    job_id = lambda_inputs['CodePipeline.job']['id']
+    job_id = @code_pipeline_job['id']
     log "job_id: #{job_id}"
 
     audit_impl job_id
   rescue Exception => e
-    log "Error:\n\t#{e.to_s}\nBacktrace:\n\t#{e.backtrace.join("\n\t")}"
+    log exception_message(e)
     codepipeline.put_job_failure_result failure_details: {
       type: 'JobFailed',
       message: 'Error executing cfn-nag: ' + "#{e.class}",
@@ -22,21 +27,20 @@ class CodePipelineInvoker
     }, job_id: job_id
   end
 
-  def lambda_inputs
-    $lambdaInputMap
-  end
-
   def log(message)
-    $lambdaLogger.log message
+    puts message
   end
 
   private
 
+  def exception_message(e)
+    "Error:\n\t#{e.to_s}\nBacktrace:\n\t#{e.backtrace.join("\n\t")}"
+  end
+
   def retrieve_cloudformation_entries
-    cloudformation_entries = \
-      CodePipelineUtil.retrieve_files_within_input_artifact(
-        codepipeline_event: lambda_inputs['CodePipeline.job']
-      )
+    cloudformation_entries = CodePipelineUtil.retrieve_files_within_input_artifact(
+        codepipeline_event: @code_pipeline_job
+    )
     log "cloudformation_entries: #{cloudformation_entries}"
     cloudformation_entries
   end
@@ -44,15 +48,28 @@ class CodePipelineInvoker
   def audit_impl(job_id)
     cloudformation_entries = retrieve_cloudformation_entries
 
-    cfn_nag = CfnNag.new
+    cfn_nag = CfnNag.new config: cfn_nag_config
 
     audit_results = cloudformation_entries.map do |cloudformation_entry|
-      { name: cloudformation_entry[:name],
-        audit_result:
-        cfn_nag.audit(cloudformation_string: cloudformation_entry[:contents]) }
+      {
+        name: cloudformation_entry[:name],
+        audit_result: cfn_nag.audit(cloudformation_string: cloudformation_entry[:contents])
+      }
     end
 
     put_job_result job_id, audit_results
+  end
+
+  def cfn_nag_config
+    CfnNagConfig.new(
+      profile_definition: nil,
+      blacklist_definition: nil,
+      rule_directory: nil,
+      allow_suppression: true,
+      print_suppression: false,
+      isolate_custom_rule_exceptions: false,
+      fail_on_warnings: false
+    )
   end
 
   def any_audit_failures?(audit_results)
@@ -62,10 +79,11 @@ class CodePipelineInvoker
   end
 
   def external_execution_id
-    { external_execution_id: $lambdaContext.getAwsRequestId }
+    {
+      external_execution_id: @aws_request_id
+    }
   end
 
-  # rubocop:disable Metrics/MethodLength
   def put_job_result(job_id,
                      audit_results)
     log PlainTextResults.new.render audit_results
@@ -74,14 +92,15 @@ class CodePipelineInvoker
 
     if any_audit_failures?(audit_results)
       codepipeline.put_job_failure_result failure_details: {
-        type: 'JobFailed', message: audit_results_summary,
+        type: 'JobFailed',
+        message: audit_results_summary,
         **external_execution_id
       }, job_id: job_id
     else
       codepipeline.put_job_success_result execution_details: {
-        summary: audit_results_summary, **external_execution_id
+        summary: audit_results_summary,
+        **external_execution_id
       }, job_id: job_id
     end
   end
-  # rubocop:enable Metrics/MethodLength
 end

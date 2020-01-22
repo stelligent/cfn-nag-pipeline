@@ -1,0 +1,119 @@
+Parameters:
+  TargetEnv:
+    Type: String
+    Default: dev
+  ServerlessApplicationName:
+    Type: String
+    Default: cfn-nag-pipeline
+  PipelineName:
+    Type: String
+    Default: CfnNagSarTestPipeline
+
+##
+# This is the sar_deploy_role plus can stand up a pipeline, can deploy a lambda from SAR
+# run the pipeline and check the results and tear it all down
+##
+Resources:
+  CfnNagSarServiceUser:
+    Type: AWS::IAM::User
+
+  E2EPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Users:
+        - !Ref CfnNagSarServiceUser
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Action:
+              - s3:CreateBucket
+              - s3:HeadBucket
+            Resource: '*'
+          -
+            Effect: Allow
+            Action:
+              - s3:PutBucketPolicy
+              - s3:PutObject
+              - s3:GetObject
+              - s3:PutBucketVersioning
+            Resource:
+              - !Sub arn:aws:s3:::cfn-nag-pipeline-${TargetEnv}-${AWS::Region}
+              - !Sub 'arn:aws:s3:::cfn-nag-pipeline-${TargetEnv}-${AWS::Region}/*'
+              - !Sub 'arn:aws:s3:::*cfnnagsarpipelinesourcebucket*/*'
+              - !Sub 'arn:aws:s3:::*cfnnagsarpipelinesourcebucket*'
+          -
+            Effect: Allow
+            Action:
+              - serverlessrepo:CreateApplication
+              - serverlessrepo:GetApplication*
+            Resource: '*'
+          -
+            Effect: Allow
+            Action:
+              - serverlessrepo:CreateApplicationVersion
+              - serverlessrepo:PutApplicationPolicy
+            Resource:
+              - !Sub arn:aws:serverlessrepo:${AWS::Region}:${AWS::AccountId}:applications/${ServerlessApplicationName}
+          -
+            Effect: Allow
+            Action:
+              - cloudformation:*
+              - lambda:CreateFunction
+              - lambda:DeleteFunction
+              # we have to create roles for the codepipeline to do its thing
+              - iam:CreateRole
+              - iam:GetRole
+              - iam:PutRolePolicy
+              - iam:GetRolePolicy
+              - iam:AttachRolePolicy
+              - iam:PassRole
+            Resource: '*'
+          -
+            Effect: Allow
+            Action:
+              - lambda:GetFunction
+            Resource:
+              - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ServerlessApplicationName}
+          -
+            Effect: Allow
+            Action:
+              - codepipeline:CreatePipeline
+              - codepipeline:UpdatePipeline
+              - codepipeline:GetPipeline*
+              - codepipeline:StartPipelineExecution
+              - codepipeline:TagResource
+              - codepipeline:ListTagsForResource
+            Resource:
+              - !Sub arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}
+
+############################# DELETE PERMISSIONS #########################################
+          -
+            Effect: Allow
+            Action:
+              - iam:DeleteRole
+              - iam:DetachRolePolicy
+              - iam:DeleteRolePolicy
+            Resource: '*'
+          -
+            Effect: Allow
+            Action:
+              - codepipeline:DeletePipeline
+            Resource:
+              - !Sub arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}
+          -
+            Effect: Allow
+            Action:
+              - lambda:DeleteFunction
+            Resource:
+              - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ServerlessApplicationName}
+          -
+            Effect: Allow
+            Action:
+              - s3:DeleteBucket
+            Resource:
+              - !Sub arn:aws:s3:::cfn-nag-pipeline-${TargetEnv}-${AWS::Region}
+              - !Sub 'arn:aws:s3:::cfn-nag-pipeline-${TargetEnv}-${AWS::Region}/*'
+              - !Sub 'arn:aws:s3:::*cfnnagsarpipelinesourcebucket*/*'
+              - !Sub 'arn:aws:s3:::*cfnnagsarpipelinesourcebucket*'

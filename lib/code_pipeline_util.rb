@@ -2,7 +2,7 @@ require 'zip_util'
 require 's3_util'
 require 'fileutils'
 
-# Utility methods for CodePipeline
+
 class CodePipelineUtil
   class << self
     ##
@@ -60,9 +60,7 @@ class CodePipelineUtil
     end
 
     def user_parameters(codepipeline_event)
-      codepipeline_event['data'] \
-                        ['actionConfiguration'] \
-                        ['configuration']['UserParameters']
+      codepipeline_event['data']['actionConfiguration']['configuration']['UserParameters']
     end
 
     def input_artifact(codepipeline_event)

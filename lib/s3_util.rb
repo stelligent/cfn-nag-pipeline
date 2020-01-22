@@ -1,4 +1,3 @@
-require 'aws-sdk'
 require 'tempfile'
 require_relative 'clients'
 

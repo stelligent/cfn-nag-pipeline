@@ -1,0 +1,49 @@
+Parameters:
+  TargetEnv:
+    Type: String
+    Default: prod
+  ServerlessApplicationName:
+    Type: String
+    Default: cfn-nag-pipeline
+
+Resources:
+  CfnNagSarServiceUser:
+    Type: AWS::IAM::User
+
+  SarDeployPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Users:
+        - !Ref CfnNagSarServiceUser
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Action:
+              - s3:CreateBucket
+              - s3:HeadBucket
+            Resource: '*'
+          -
+            Effect: Allow
+            Action:
+              - s3:PutBucketPolicy
+              - s3:PutObject
+              - s3:PutBucketVersioning
+            Resource:
+              - !Sub arn:aws:s3:::cfn-nag-pipeline-${TargetEnv}-${AWS::Region}
+              - !Sub 'arn:aws:s3:::cfn-nag-pipeline-${TargetEnv}-${AWS::Region}/*'
+
+          -
+            Effect: Allow
+            Action:
+              - serverlessrepo:CreateApplication
+              - serverlessrepo:GetApplication*
+            Resource: '*'
+          -
+            Effect: Allow
+            Action:
+              - serverlessrepo:CreateApplicationVersion
+              - serverlessrepo:PutApplicationPolicy
+            Resource:
+              - !Sub arn:aws:serverlessrepo:${AWS::Region}:${AWS::AccountId}:applications/${ServerlessApplicationName}

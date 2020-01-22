@@ -5,7 +5,6 @@ require 'zip_util'
 describe ZipUtil, :zip do
   context 'zip doesnt exist' do
     it 'raises an error' do
-      $lambdaInputMap = {}
       expect do
         _ = ZipUtil.read_files_from_zip \
           '/tmp/somethingiwillneverfind',
@@ -16,7 +15,6 @@ describe ZipUtil, :zip do
 
   context 'file within zip doesnt exist' do
     it 'raises an error' do
-      $lambdaInputMap = {}
       expect do
         _ = ZipUtil.read_files_from_zip \
           'spec/test_templates/json_templates.zip',
