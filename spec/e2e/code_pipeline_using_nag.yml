@@ -2,18 +2,19 @@ Parameters:
   SourceObjectKey:
     Description: 'S3 source artifact'
     Type: String
-    Default: CfnTemplates.zip
+    Default: json_templates.zip
   CfnNagLambdaFunctionName:
     Type: String
     Default: cfn-nag-pipeline
   CfnTemplatePattern:
     Type: String
-    Default: '*.json'
+    Default: 'spec/test_templates/json/ec2_volume/*.json'
 
 Resources:
   CfnNagSarPipelineSourceBucket:
     Type: AWS::S3::Bucket
     Properties:
+      Name: CfnNagSarPipelineSourceBucket
       VersioningConfiguration:
         Status: Enabled
     DeletionPolicy: Retain
