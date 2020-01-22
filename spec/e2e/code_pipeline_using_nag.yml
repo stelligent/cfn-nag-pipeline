@@ -13,11 +13,11 @@ Parameters:
 Resources:
   CfnNagSarPipelineSourceBucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
-     BucketName: CfnNagSarPipelineSourceBucket
+      BucketName: CfnNagSarPipelineSourceBucket
       VersioningConfiguration:
         Status: Enabled
-    DeletionPolicy: Retain
 
   CodePipelineArtifactStoreBucket:
     Type: AWS::S3::Bucket
