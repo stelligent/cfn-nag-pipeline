@@ -128,6 +128,7 @@ task :deploy do
 aws cloudformation deploy --template-file target/lambda.yml \
                           --stack-name #{LAMBDA_DEPLOYMENT_CFN_STACK_NAME} \
                           --capabilities CAPABILITY_NAMED_IAM \
+                          --no-fail-on-empty-changeset \
                           --parameter-overrides PipelineBucketName="*codepipelineartifactstorebucket*"
 END
   sh deploy_command
