@@ -106,12 +106,14 @@ END
   cfn_nag_version = gem_listing_of_cfn_nag.split('(')[1].split(')')[0]
 
   puts "[INFO] creating new application version #{cfn_nag_version}"
+  #### IF VERSION ALREADY THERE!!!!!????? UPDATE OR REPLACE????
+  #### lazy to ignore failure but need to list-application-versions
   create_application_version_command = <<END
 aws serverlessrepo create-application-version --application-id #{application_id} \
                                               --source-code-url #{source_code_url} \
                                               --template-body file://target/lambda.yml \
                                               --region #{AWS_DEFAULT_REGION} \
-                                              --semantic-version #{cfn_nag_version}
+                                              --semantic-version #{cfn_nag_version} || true
 END
   sh create_application_version_command
 end

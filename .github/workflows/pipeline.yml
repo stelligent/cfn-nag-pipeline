@@ -36,7 +36,6 @@ jobs:
   acceptance:
     name: Acceptance
     runs-on: ubuntu-latest
-    needs: [commit]
 
     steps:
       - uses: actions/checkout@master
@@ -63,7 +62,7 @@ jobs:
       - name: Deploy the nag Lambda from SAR
         run: rake deploy
       - name: Deploy a CodePipeline to use cfn-nag lambda
-        run: aws cloudformation deploy --stack-name nag-sar-e2e --template-file file://spec/e2e/code_pipeline_using_nag.yml
+        run: aws cloudformation deploy --stack-name nag-sar-e2e --template-file spec/e2e/code_pipeline_using_nag.yml
       - name: Kick off the pipeline
         run: aws s3 cp spec/test_templates/json_templates.zip s3://CfnNagSarPipelineSourceBucket/
 #      - name: Inspect status
