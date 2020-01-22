@@ -23,7 +23,7 @@ task default: [:test]
 
 task test: [:spec] do
   puts '[INFO] validating cfn template'
-  sh "aws cloudformation validate-template --template-body file://lambda.yml --profile labs-auto --region #{AWS_DEFAULT_REGION}"
+  sh "aws cloudformation validate-template --template-body file://lambda.yml --region #{AWS_DEFAULT_REGION}"
 end
 
 task :bucket, :bucket_name do |task, args|
