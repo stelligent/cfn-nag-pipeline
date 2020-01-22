@@ -24,6 +24,11 @@ jobs:
       - name: Bundle install
         run: bundle check || bundle install
 
+      - name: Configure AWS Credentials for cfn validate
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
       - name: Rspec tests
         run: rake test
 
@@ -58,7 +63,7 @@ jobs:
       - name: Deploy a CodePipeline to use cfn-nag lambda
         run: aws cloudformation deploy --stack-name nag-sar-e2e --template-file file://spec/e2e/code_pipeline_using_nag.yml
       - name: Kick off the pipeline
-        run: aws s3 spec/test_templates/json_templates.zip s3://CfnNagSarPipelineSourceBucket/
+        run: aws s3 cp spec/test_templates/json_templates.zip s3://CfnNagSarPipelineSourceBucket/
 #      - name: Inspect status
 #        run: rspec spec/e2e/pipeline_invoked_nag_spec.rb
 #        env:
