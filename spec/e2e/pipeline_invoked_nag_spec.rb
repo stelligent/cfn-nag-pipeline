@@ -14,9 +14,9 @@ describe 'Pipeline Invocation' do
       jmespath_to_cfn_nag_action = 'stageStates[?stageName == `Scan`]|[0].actionStates|[0].latestExecution.errorDetails.message'
       actual_failure_message = `aws codepipeline get-pipeline-state --name #{pipeline_name} --query '#{jmespath_to_cfn_nag_action}'`.chomp
 
-      expected_failure_message = "Failures count: 5\nWarnings count: 5\n"
+      expected_failure_message = "Failures count: 3\nWarnings count: 4\n"
 
-      expect actual_failure_message.to eq expected_failure_message
+      expect(actual_failure_message).to eq(expected_failure_message)
     end
   end
 end
