@@ -63,12 +63,17 @@ jobs:
         run: rake deploy
       - name: Deploy a CodePipeline to use cfn-nag lambda
         run: aws cloudformation deploy --stack-name nag-sar-e2e --template-file spec/e2e/code_pipeline_using_nag.yml --capabilities CAPABILITY_IAM  --no-fail-on-empty-changeset
+      - name: Discover the source bucket
+        id: source_bucket
+        run: |
+          BUCKET_NAME=$(aws cloudformation describe-stacks --stack-name nag-sar-e2e --query 'Stacks|[0].Outputs[?OutputKey==`CfnNagSarPipelineSourceBucket`]|[0].OutputValue' --output text)
+          echo "::set-output name=source_artifacts_bucket_name::$BUCKET_NAME"
       - name: Put source into right place in s3
-        run: aws s3 cp spec/test_templates/json_templates.zip s3://cfnnagsarpipelinesourcebucket/
+        run: aws s3 cp spec/test_templates/json_templates.zip s3://${{ steps.source_bucket.outputs.source_artifacts_bucket_name }}/
       - name: Kick off the pipeline
         id: kickoff
         run: |
-          EXECUTION_ID=$(aws codepipeline start-pipeline-execution --name CfnNagSarTestPipeline  --output text --query pipelineExecutionId)
+          EXECUTION_ID=$(aws codepipeline start-pipeline-execution --name CfnNagSarTestPipeline --output text --query pipelineExecutionId)
           sleep 15
           echo "::set-output name=execution_id::$EXECUTION_ID"
       - name: Inspect status

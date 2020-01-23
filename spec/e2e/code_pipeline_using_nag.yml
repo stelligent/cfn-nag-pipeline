@@ -15,7 +15,6 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     Properties:
-      BucketName: cfnnagsarpipelinesourcebucket
       VersioningConfiguration:
         Status: Enabled
 
@@ -121,3 +120,5 @@ Resources:
 Outputs:
   CfnNagSarTestPipeline:
     Value: !Ref CfnNagSarTestPipeline
+  CfnNagSarPipelineSourceBucket:
+    Value: !Ref CfnNagSarPipelineSourceBucket
