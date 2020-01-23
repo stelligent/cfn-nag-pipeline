@@ -1,4 +1,4 @@
-![cfn_nag](https://github.com/stelligent/cfn_nag/raw/master/logo.png?raw=true "cfn_nag")
+![cfn_nag](https://github.com/stelligent/cfn_nag/raw/master/logo.png?raw=true "cfn_nag" =150x)
 
 ## Overview
 A lambda function to run [cfn_nag](https://github.com/stelligent/cfn_nag) as an action in CodePipeline.
