@@ -69,16 +69,17 @@ jobs:
         id: kickoff
         run: |
           EXECUTION_ID=$(aws codepipeline start-pipeline-execution --name CfnNagSarTestPipeline  --output text --query pipelineExecutionId)
+          sleep 15
           echo "::set-output name=execution_id::$EXECUTION_ID"
       - name: Inspect status
         run: rspec spec/e2e/pipeline_invoked_nag_spec.rb
         env:
           pipeline_name: CfnNagSarTestPipeline
           execution_id: ${{ steps.kickoff.outputs.execution_id }}
-#      - name: Cleanup the pipeline
-#        run: aws cloudformation delete-stack --stack-name nag-sar-e2e
-#      - name: Uneploy the nag Lambda from SAR
-#        run: rake undeploy
+      - name: Cleanup the pipeline
+        run: aws cloudformation delete-stack --stack-name nag-sar-e2e
+      - name: Uneploy the nag Lambda from SAR
+        run: rake undeploy
 
   release:
     name: Release
