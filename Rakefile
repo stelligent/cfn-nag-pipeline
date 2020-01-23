@@ -136,7 +136,7 @@ end
 
 task :undeploy do
   undeploy_command = <<END
-aws cloudformation delete-stack -stack-name #{LAMBDA_DEPLOYMENT_CFN_STACK_NAME}
+aws cloudformation delete-stack --stack-name #{LAMBDA_DEPLOYMENT_CFN_STACK_NAME}
 END
   sh undeploy_command
 end

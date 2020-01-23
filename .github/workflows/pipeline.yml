@@ -76,9 +76,9 @@ jobs:
         env:
           pipeline_name: CfnNagSarTestPipeline
           execution_id: ${{ steps.kickoff.outputs.execution_id }}
-      - name: Cleanup the pipeline
+      - name: Undeploy the pipeline
         run: aws cloudformation delete-stack --stack-name nag-sar-e2e
-      - name: Uneploy the nag Lambda from SAR
+      - name: Undeploy the nag Lambda from SAR
         run: rake undeploy
 
   release:
