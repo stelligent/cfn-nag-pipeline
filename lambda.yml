@@ -43,8 +43,5 @@ Resources:
               Resource: "*"
       - S3ReadPolicy:
           BucketName: !Ref PipelineBucketName
-      - !If
-        - NoCustomRules
-        - Aws::NoValue
-        - S3ReadPolicy:
-            BucketName: !Ref RuleBucketName
+      - S3ReadPolicy:
+          BucketName: !If [NoCustomRules, Aws::NoValue, !Ref RuleBucketName]
