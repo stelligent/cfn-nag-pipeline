@@ -23,9 +23,14 @@ task default: [:test]
 
 task test: [:spec] do
   puts '[INFO] validating cfn template'
-  sh "aws cloudformation validate-template --template-body file://lambda.yml --region #{AWS_DEFAULT_REGION}"
-  sh "aws cloudformation validate-template --template-body file://spec/e2e/e2e_role.yml --region #{AWS_DEFAULT_REGION}"
-  sh "aws cloudformation validate-template --template-body file://spec/e2e/code_pipeline_using_nag.yml --region #{AWS_DEFAULT_REGION}"
+  cfn_templates = %w[
+    lambda.yml
+    spec/e2e/e2e_role.yml
+    spec/e2e/code_pipeline_using_nag.yml
+  ]
+  cfn_templates.each do |cfn_template|
+    sh "aws cloudformation validate-template --template-body file://#{cfn_template} --region #{AWS_DEFAULT_REGION}"
+  end
 end
 
 task :bucket, :bucket_name do |task, args|
@@ -129,7 +134,7 @@ aws cloudformation deploy --template-file target/lambda.yml \
                           --stack-name #{LAMBDA_DEPLOYMENT_CFN_STACK_NAME} \
                           --capabilities CAPABILITY_NAMED_IAM \
                           --no-fail-on-empty-changeset \
-                          --parameter-overrides PipelineBucketName="*codepipelineartifactstorebucket*"
+                          --parameter-overrides PipelineBucketName="*codepipelineartifactstorebucket*",RuleBucketName=cfn-nag-rules
 END
   sh deploy_command
 end

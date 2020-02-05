@@ -13,6 +13,10 @@ Parameters:
     Description: 'The prefix in the bucket to load custom nag rules from'
     Type: String
     Default: ''
+
+Conditions:
+  NoCustomRules: !Equals [ !Ref RuleBucketName, '' ]
+
 Resources:
   CfnNagFunction:
     Type: AWS::Serverless::Function
@@ -39,3 +43,8 @@ Resources:
               Resource: "*"
       - S3ReadPolicy:
           BucketName: !Ref PipelineBucketName
+      - !If
+        - NoCustomRules
+        - Aws::NoValue
+        - S3ReadPolicy:
+            BucketName: !Ref RuleBucketName

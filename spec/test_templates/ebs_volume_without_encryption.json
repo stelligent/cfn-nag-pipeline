@@ -9,6 +9,13 @@
         "Iops": "100",
         "AvailabilityZone": "us-east-1c"
       }
+    },
+    "workspace1" : {
+      "Type": "AWS::WorkSpaces::Workspace",
+      "Properties": {
+        "UserName": "test",
+        "UserVolumeEncryptionEnabled": "true"
+      }
     }
   }
 }
