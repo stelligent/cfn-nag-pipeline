@@ -8,7 +8,7 @@ Parameters:
   RuleBucketName:
     Description: 'The bucket to load custom nag rules from'
     Type: String
-    Default: ''
+    Default: 'some-bucket'
   RuleBucketPrefix:
     Description: 'The prefix in the bucket to load custom nag rules from'
     Type: String
@@ -44,4 +44,4 @@ Resources:
       - S3ReadPolicy:
           BucketName: !Ref PipelineBucketName
       - S3ReadPolicy:
-          BucketName: !If [NoCustomRules, AWS::NoValue, !Ref RuleBucketName]
+          BucketName: !Ref RuleBucketName
