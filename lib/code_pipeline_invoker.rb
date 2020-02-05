@@ -8,9 +8,11 @@ require_relative 'plain_text_summary'
 class CodePipelineInvoker
   include Clients
 
-  def initialize(code_pipeline_job, aws_request_id)
+  def initialize(code_pipeline_job, aws_request_id, s3_rule_bucket_name, s3_rule_prefix)
     @aws_request_id = aws_request_id
     @code_pipeline_job = code_pipeline_job
+    @s3_rule_bucket_name = s3_rule_bucket_name
+    @s3_rule_prefix = s3_rule_prefix
   end
 
   def audit
@@ -61,6 +63,19 @@ class CodePipelineInvoker
   end
 
   def cfn_nag_config
+    if @s3_rule_bucket_name
+      s3_rule_bucket_definition = <<END
+---
+repo_class_name: S3BucketBasedRuleRepo
+repo_arguments:
+  s3_bucket_name: #{@s3_rule_bucket_name}
+  prefix: '#{@s3_rule_prefix}'
+END
+      rule_repository_definitions  = [s3_rule_bucket_definition]
+    else
+      rule_repository_definitions = []
+    end
+
     CfnNagConfig.new(
       profile_definition: nil,
       blacklist_definition: nil,
@@ -68,7 +83,8 @@ class CodePipelineInvoker
       allow_suppression: true,
       print_suppression: false,
       isolate_custom_rule_exceptions: false,
-      fail_on_warnings: false
+      fail_on_warnings: false,
+      rule_repository_definitions: rule_repository_definitions
     )
   end
 

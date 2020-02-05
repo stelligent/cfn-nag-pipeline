@@ -16,7 +16,9 @@ describe CodePipelineInvoker do
 
     @code_pipeline_invoker = CodePipelineInvoker.new(
       code_pipeline_job,
-      aws_request_id
+      aws_request_id,
+      nil,
+      nil
     )
 
     allow(@code_pipeline_invoker).to receive(:codepipeline)

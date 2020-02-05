@@ -85,9 +85,11 @@ Resources:
               - codepipeline:GetPipeline*
               - codepipeline:StartPipelineExecution
               - codepipeline:TagResource
+              - codepipeline:UntagResource
               - codepipeline:ListTagsForResource
             Resource:
               - !Sub arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}
+              - !Sub arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${PipelineName}/*
 
 ############################# DELETE PERMISSIONS #########################################
           -

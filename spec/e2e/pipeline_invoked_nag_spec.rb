@@ -1,4 +1,4 @@
-describe 'Pipeline Invocation' do
+describe 'Pipeline Invocation', :e2e do
   context 'Pipeline running with execution id' do
     it 'returns a failure count' do
       pipeline_name = ENV['pipeline_name']

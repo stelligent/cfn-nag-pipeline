@@ -5,6 +5,14 @@ Parameters:
   PipelineBucketName:
     Description: 'The bucket name to allow access to read artifacts from - the CodePipeline Artifact Store'
     Type: String
+  RuleBucketName:
+    Description: 'The bucket to load custom nag rules from'
+    Type: String
+    Default: ''
+  RuleBucketPrefix:
+    Description: 'The prefix in the bucket to load custom nag rules from'
+    Type: String
+    Default: ''
 Resources:
   CfnNagFunction:
     Type: AWS::Serverless::Function
@@ -15,6 +23,10 @@ Resources:
       Timeout: 300
       CodeUri:  lib
       Handler: handler.handler
+      Environment:
+        Variables:
+          RULE_BUCKET_NAME: !Ref RuleBucketName
+          RULE_BUCKET_PREFIX: !Ref RuleBucketPrefix
 
       Policies: 
       - CodePipelineLambdaExecutionPolicy:
