@@ -29,7 +29,7 @@ describe ZipUtil, :zip do
         'spec/test_templates/json_templates.zip',
         'spec/test_templates/json/ec2_volume/*.json'
 
-      expect(contents.size).to eq 3
+      expect(contents.size).to eq 4
 
       contents.each do |content|
         puts content[:name]
