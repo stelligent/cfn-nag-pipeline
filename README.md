@@ -6,6 +6,9 @@ A lambda function to run [cfn_nag](https://github.com/stelligent/cfn_nag) as an 
 ## Installation
 To install, navigate to the cfn-nag-pipeline application in the AWS Serverless Repo console and click deploy.
 
+### Custom Rules
+The "application" deployed in SAR reflects always reflects the latest version of cfn_nag published to [rubygems.org](https://rubygems.org/gems/cfn-nag).  This means the "core" rules should always be up to date.  That said, if you have developed custom rules, as of 0.5.5 you can load those rules from an S3 bucket of your choosing.  At the point of deploying the "application" from SAR, you can select a rule bucket name and a prefix within that bucket.  Any objects with a key of the form: prefix/\*Rule.rb will be loaded as a cfn_nag rule.
+
 ## Reference the Lambda from Code Pipeline
 
 * Add a source step for a repository with CloudFormation templates
@@ -13,6 +16,7 @@ To install, navigate to the cfn-nag-pipeline application in the AWS Serverless R
 * Select the function name `cfn-nag-pipeline`
 * Select the glob for CloudFormation templates in the user parameters section for the step: e.g. `spec/test_templates/json/ec2_volume/*.json`
 * Select the name of the Input Artifact from the repository
+* For an example of such a pipeline, in this repository see: `spec/e2e/code_pipeline_using_nag.yml`
 
 ## Development
 
