@@ -23,4 +23,4 @@ The "application" deployed in SAR always reflects the latest version of cfn_nag 
 * Ensure **awscli** is installed. The credentials will need permission to create an S3 bucket, lambda functions, and an IAM role for the functions (at least)
 * To run tests and build the lambda function, run: `rake`
 * To deploy the function, run: `rake deploy`
-* e2e_role.yml is necessary to run the release pipeline
+* [e2e_role.yml](./spec/e2e_role.yml) is necessary to run the release pipeline
