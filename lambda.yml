@@ -32,15 +32,8 @@ Resources:
           RULE_BUCKET_NAME: !Ref RuleBucketName
           RULE_BUCKET_PREFIX: !Ref RuleBucketPrefix
 
-      Policies: 
-      - CodePipelineLambdaExecutionPolicy:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action:
-                - codepipeline:PutJobFailureResult
-                - codepipeline:PutJobSuccessResult
-              Resource: "*"
+      Policies:
+      - CodePipelineLambdaExecutionPolicy: {}
       - S3ReadPolicy:
           BucketName: !Ref PipelineBucketName
       - S3ReadPolicy:
