@@ -3,3 +3,4 @@ coverage
 target
 vendor
 .idea
+Gemfile.lock

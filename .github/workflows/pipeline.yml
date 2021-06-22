@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - master
-  repository_dispatch: {}
+  repository_dispatch:
+  workflow_dispatch:
 
 jobs:
   commit:
@@ -13,16 +14,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-      - name: Set up Ruby 2.5
+      - name: Set up Ruby
         uses: actions/setup-ruby@v1
         with:
-          version: 2.5.x
-      - name: Install Bundler
-        run: gem install bundler
-      - name: Which bundler?
-        run: bundle -v
-      - name: Bundle install
-        run: bundle check || bundle install
+          ruby-version: '2.7'
 
       - name: Configure AWS Credentials for cfn validate
         uses: aws-actions/configure-aws-credentials@v1
@@ -39,16 +34,10 @@ jobs:
     needs: [commit]
     steps:
       - uses: actions/checkout@master
-      - name: Set up Ruby 2.5
+      - name: Set up Ruby
         uses: actions/setup-ruby@v1
         with:
-          version: 2.5.x
-      - name: Install Bundler
-        run: gem install bundler
-      - name: Which bundler?
-        run: bundle -v
-      - name: Bundle install
-        run: bundle check || bundle install
+          ruby-version: '2.7'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -92,16 +81,10 @@ jobs:
     needs: [commit, acceptance]
     steps:
       - uses: actions/checkout@master
-      - name: Set up Ruby 2.5
+      - name: Set up Ruby
         uses: actions/setup-ruby@v1
         with:
-          version: 2.5.x
-      - name: Install Bundler
-        run: gem install bundler
-      - name: Which bundler?
-        run: bundle -v
-      - name: Bundle install
-        run: bundle check || bundle install
+          ruby-version: '2.7'
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
